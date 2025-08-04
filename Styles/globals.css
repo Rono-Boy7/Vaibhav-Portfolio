@@ -1,0 +1,39 @@
+/* ./Styles/globals.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+}
+
+/* Metallic card shine animation */
+@keyframes shine-animation {
+  from {
+    transform: translateX(-100%) rotate(30deg);
+  }
+  to {
+    transform: translateX(100%) rotate(30deg);
+  }
+}
+
+/* The moving highlight stripe */
+.shine {
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  width: 200%;
+  height: 100%;
+  transform: translateX(-100%) rotate(30deg);
+  animation: shine-animation 2s infinite ease-in-out;
+}
+
+/* Ensure the face stays crisp during rotation */
+.card-metal {
+  backface-visibility: hidden;
+  will-change: transform;
+}
