@@ -1,10 +1,14 @@
-/* ./Styles/globals.css */
+/* styles/globals.css */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* OTU wallpaper behind ID card only */
+html, body {
+  height: 100%;
+}
+
+/* Wallpaper behind the ID card pane only */
 .idcard-bg {
   background-image: url('../Public/OTUfull.jpg');
   background-size: cover;
@@ -17,53 +21,22 @@
   }
 }
 
-/* Enable 3D perspective for the card container */
+/* Enable 3D perspective for the card wrapper */
 .perspective-1000 {
   perspective: 1000px;
 }
 
-/* (Keep your existing shine, card-metal, etc. below) */
+/* Scope the shine only inside .card-metal */
 @keyframes shine-animation {
   from { transform: translateX(-100%) rotate(30deg); }
-  to   { transform: translateX(100%) rotate(30deg); }
+  to   { transform: translateX(100%)  rotate(30deg); }
 }
-.shine {
+.card-metal .shine {
   background: linear-gradient(
     120deg,
-    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0)   0%,
     rgba(255,255,255,0.4) 50%,
-    rgba(255,255,255,0) 100%
-  );
-  width: 200%; height: 100%;
-  transform: translateX(-100%) rotate(30deg);
-  animation: shine-animation 2s infinite ease-in-out;
-}
-.card-metal {
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
-html, body {
-  height: 100%;
-}
-
-/* Metallic card shine animation */
-@keyframes shine-animation {
-  from {
-    transform: translateX(-100%) rotate(30deg);
-  }
-  to {
-    transform: translateX(100%) rotate(30deg);
-  }
-}
-
-/* The moving highlight stripe */
-.shine {
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0) 100%
+    rgba(255,255,255,0)   100%
   );
   width: 200%;
   height: 100%;
@@ -71,7 +44,7 @@ html, body {
   animation: shine-animation 2s infinite ease-in-out;
 }
 
-/* Ensure the face stays crisp during rotation */
+/* Keep card faces sharp */
 .card-metal {
   backface-visibility: hidden;
   will-change: transform;

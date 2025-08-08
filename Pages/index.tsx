@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import IDCard from '../components/IDCard';
 import Head from 'next/head';
 
-const Terminal = dynamic(() => import('../components/Terminal'), { ssr: false });
+// Client-only 3D card and terminal
+const IDCard3D = dynamic(() => import('../Components/IDCard'), { ssr: false });
+const Terminal = dynamic(() => import('../Components/Terminal'), { ssr: false });
 
 export default function Home() {
   const [time, setTime] = useState('');
@@ -36,7 +37,6 @@ export default function Home() {
       </Head>
 
       <div className="flex flex-col h-screen">
-
         {/* Header */}
         <header className="bg-gray-900 text-green-400 font-mono p-4 text-center">
           <h1 className="text-3xl font-bold">Vaibhav Patel</h1>
@@ -47,14 +47,15 @@ export default function Home() {
 
         {/* Main */}
         <main className="flex flex-grow overflow-hidden">
-
-          {/* Left: ID card, wrapped in the OTU wallpaper */}
-          <div className="w-1/2 idcard-bg flex items-center justify-center perspective-1000">
-            <IDCard />
+          {/* Left: ID card smaller */}
+          <div className="w-2/5 idcard-bg flex items-center justify-center">
+            <div className="w-64 h-96 perspective-1000">
+              <IDCard3D />
+            </div>
           </div>
 
-          {/* Right: Terminal */}
-          <div className="w-1/2 bg-gray-900 text-green-400">
+          {/* Right: Terminal bigger */}
+          <div className="w-3/5 bg-gray-900 text-green-400">
             <Terminal />
           </div>
         </main>
@@ -64,7 +65,6 @@ export default function Home() {
           <span>vaibhav@portfolio:~$</span>
           <span>{time}</span>
         </footer>
-
       </div>
     </>
   );
