@@ -66,9 +66,6 @@ export default function IDCard() {
               <p className="text-gray-600 text-sm">
                 Networking &amp; Cyber Security Student
               </p>
-              <p className="text-gray-600 text-sm">
-                Student No.: 100889696
-              </p>
             </div>
           </div>
         </motion.div>

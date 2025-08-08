@@ -1,6 +1,9 @@
+// components/Terminal.tsx
+
 import { useEffect, useRef, useState } from "react";
 import "xterm/css/xterm.css";
 import { Terminal as XTerm } from "xterm";
+import SnakeGame from "./SnakeGame";
 
 const COLOR_GREEN = "\x1b[32m";
 const COLOR_BLUE = "\x1b[34m";
@@ -8,8 +11,8 @@ const COLOR_WHITE = "\x1b[37m";
 const COLOR_RESET = "\x1b[0m";
 
 const HEADER =
-  `${COLOR_GREEN}Type 'help' for available commands.${COLOR_RESET}\r\n` +
-  `${COLOR_GREEN}------------------------------------------------------------${COLOR_RESET}\r\n`;
+  `${COLOR_GREEN}Type 'help' for available commands. Snake Game Built-In [Type: "game"]${COLOR_RESET}\r\n` +
+  `${COLOR_GREEN}----------------------------------------------------------------------${COLOR_RESET}\r\n`;
 
 const PROMPT = `${COLOR_BLUE}vaibhav@portfolio:~$ ${COLOR_RESET}`;
 
@@ -31,6 +34,8 @@ const COMMANDS: Record<string, string> = {
     `| education       | My Educational Background     |\r\n` +
     `+-----------------+-------------------------------+\r\n` +
     `| certifications  | View My Certifications        |\r\n` +
+    `+-----------------+-------------------------------+\r\n` +
+    `| game            | Play a mini game (Snake)      |\r\n` +
     `+-----------------+-------------------------------+\r\n` +
     `| clear           | Clear The Terminal            |\r\n` +
     `+-----------------+-------------------------------+\r\n\r\n`,
@@ -102,19 +107,26 @@ export default function Terminal() {
   const [term, setTerm] = useState<XTerm>();
   const terminalRef = useRef<HTMLDivElement>(null);
   const bufferRef = useRef<string>("");
+  const [showGame, setShowGame] = useState(false);
 
+  // Init xterm when terminal is visible
   useEffect(() => {
+    if (showGame) return; // don't init while game is shown
     if (!terminalRef.current) return;
     const xterm = new XTerm({
       cursorBlink: true,
       scrollback: 1000,
-      cols: 90 // limit width for small container
+      cols: 90
     });
     xterm.open(terminalRef.current);
     setTerm(xterm);
-    return () => xterm.dispose();
-  }, []);
+    return () => {
+      xterm.dispose();
+      setTerm(undefined);
+    };
+  }, [showGame]);
 
+  // Welcome text
   useEffect(() => {
     if (!term) return;
 
@@ -126,21 +138,22 @@ export default function Terminal() {
     };
 
     (async () => {
-      term.clear();
-      term.write(HEADER);
+      term!.clear();
+      term!.write(HEADER);
       await writeAnimated(`${COLOR_WHITE}Welcome to my interactive portfolio terminal!\r\n`);
       await writeAnimated(`${COLOR_WHITE}Type 'help' to see available commands.\r\n\r\n`);
-      term.write(PROMPT);
+      term!.write(PROMPT);
     })();
   }, [term]);
 
+  // Handle input
   useEffect(() => {
     if (!term) return;
 
     const onData = (data: string) => {
       for (let ch of data) {
         switch (ch) {
-          case "\r": // Enter
+          case "\r": { // Enter
             term.write("\r\n");
             const cmd = bufferRef.current.trim();
             bufferRef.current = "";
@@ -148,6 +161,12 @@ export default function Terminal() {
               if (cmd === "clear") {
                 term.clear();
                 term.write(HEADER);
+              } else if (cmd === "game") {
+                // Swap to game view
+                term.write(`${COLOR_WHITE}Launching Snake... Press Esc to exit.\r\n\r\n`);
+                // brief delay so user sees the message
+                setTimeout(() => setShowGame(true), 50);
+                return; // don't print prompt now; game takes over
               } else {
                 const resp =
                   COMMANDS[cmd] ??
@@ -160,14 +179,13 @@ export default function Terminal() {
               term.write(PROMPT);
             })();
             break;
-
+          }
           case "\u007F": // Backspace
             if (bufferRef.current.length) {
               bufferRef.current = bufferRef.current.slice(0, -1);
               term.write("\b \b");
             }
             break;
-
           default:
             bufferRef.current += ch;
             term.write(`${COLOR_GREEN}${ch}${COLOR_RESET}`);
@@ -179,5 +197,26 @@ export default function Terminal() {
     return () => disp.dispose();
   }, [term]);
 
-  return <div ref={terminalRef} className="h-full p-4 font-mono text-sm" />;
+  // Render either the terminal or the game
+  return (
+    <div className="h-full">
+      {!showGame ? (
+        <div ref={terminalRef} className="h-full p-4 font-mono text-sm" />
+      ) : (
+        <SnakeGame
+          onExit={() => setShowGame(false)}
+          // Theme: match terminal colors
+          colors={{
+            bg: "#0b0f14",        // deep gray/blue terminal bg
+            grid: "#0f141a",      // subtle grid
+            snake: "#20c20e",     // green
+            snakeHead: "#2ce01b", // brighter green
+            food: "#3ea6ff",      // blue accent
+            text: "#c9d1d9",      // light gray text
+            accent: "#3ea6ff",    // buttons
+          }}
+        />
+      )}
+    </div>
+  );
 }
