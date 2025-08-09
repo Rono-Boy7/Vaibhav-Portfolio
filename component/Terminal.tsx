@@ -119,6 +119,7 @@ export default function Terminal() {
       scrollback: 1000,
       cols: 90,
     });
+
     const fitAddon = new FitAddon();
     xterm.loadAddon(fitAddon);
 
