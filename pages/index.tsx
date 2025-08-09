@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import CoverPage from '../components/CoverPage';
+import CoverPage from '../component/CoverPage';
 
 // Client-only 3D card and terminal
-const IDCard3D = dynamic(() => import('../components/IDCard'), { ssr: false });
-const Terminal = dynamic(() => import('../components/Terminal'), { ssr: false });
+const IDCard3D = dynamic(() => import('../component/IDCard'), { ssr: false });
+const Terminal = dynamic(() => import('../component/Terminal'), { ssr: false });
 
 export default function Home() {
   const [time, setTime] = useState('');
