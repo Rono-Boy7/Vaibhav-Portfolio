@@ -56,7 +56,7 @@ export default function IDCard() {
             {/* Top: headshot */}
             <div className="flex justify-center">
               <Image
-                src="/Headshot.jpg"
+                src="/Headshot.JPG"
                 alt="Vaibhav Patel"
                 width={128}
                 height={128}
