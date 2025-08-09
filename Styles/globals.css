@@ -10,14 +10,14 @@ html, body {
 
 /* Wallpaper behind the ID card pane only */
 .idcard-bg {
-  background-image: url('../Public/OTUfull.jpg');
+  background-image: url('/OTUfull.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 @media (max-width: 768px) {
   .idcard-bg {
-    background-image: url('../Public/OTU.jpg');
+    background-image: url('/OTU.jpg');
   }
 }
 
