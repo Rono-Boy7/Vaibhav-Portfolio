@@ -181,10 +181,6 @@ export default function SnakeGame({
         cellSize - 2
       );
     });
-
-    ctx.fillStyle = colors.text;
-    ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillText(`Score: ${score}  (Use Arrow Keys To Control Snake)`, gridPadding, 14);
   };
 
   const step = () => {
@@ -283,7 +279,7 @@ export default function SnakeGame({
         <div className="font-mono text-sm">
           <span style={{ color: colors.snakeHead }}>Snake</span>{" "}
           <span style={{ color: colors.text }}>
-            | Score: {score} (Use Arrow Keys To Control Snake)
+            | Score: {score} (Use Arrow Keys To Control Snake - Mute Toggle Next To Exit Button)
           </span>
         </div>
         <div className="flex gap-2">

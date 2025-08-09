@@ -1,8 +1,9 @@
-// pages/index.tsx
+// ./Pages/index.tsx
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
+import CoverPage from '../Components/CoverPage';
 
 // Client-only 3D card and terminal
 const IDCard3D = dynamic(() => import('../Components/IDCard'), { ssr: false });
@@ -10,6 +11,7 @@ const Terminal = dynamic(() => import('../Components/Terminal'), { ssr: false })
 
 export default function Home() {
   const [time, setTime] = useState('');
+  const [showCover, setShowCover] = useState(true);
 
   useEffect(() => {
     const update = () => {
@@ -30,16 +32,22 @@ export default function Home() {
     return () => clearInterval(iv);
   }, []);
 
-  const pokeCard = () => {
-    // Fire a custom event that the IDCard listens for
-    window.dispatchEvent(new Event('poke-id-card'));
-  };
-
   return (
     <>
       <Head>
         <title>Vaibhav Patel • Portfolio</title>
       </Head>
+
+      <CoverPage
+        show={showCover}
+        onFinish={() => setShowCover(false)}
+        colors={{
+          bg: '#0b0f14',
+          lampOffOutline: '#3ea6ff',
+          lampOn: '#20c20e',
+          text: '#c9d1d9',
+        }}
+      />
 
       <div className="flex flex-col h-screen">
         {/* Header */}
@@ -61,7 +69,7 @@ export default function Home() {
             {/* Bottom-right pulsing, clickable label */}
             <button
               type="button"
-              onClick={pokeCard}
+              onClick={() => window.dispatchEvent(new Event('poke-id-card'))}
               title="Poke My ID Card"
               className="absolute bottom-2 right-2 text-green-400 font-mono text-sm opacity-80 animate-pulse
                          hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-green-400 rounded px-1"
