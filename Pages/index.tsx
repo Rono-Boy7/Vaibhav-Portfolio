@@ -30,6 +30,11 @@ export default function Home() {
     return () => clearInterval(iv);
   }, []);
 
+  const pokeCard = () => {
+    // Fire a custom event that the IDCard listens for
+    window.dispatchEvent(new Event('poke-id-card'));
+  };
+
   return (
     <>
       <Head>
@@ -48,14 +53,26 @@ export default function Home() {
         {/* Main */}
         <main className="flex flex-grow overflow-hidden">
           {/* Left: ID card smaller */}
-          <div className="w-2/5 idcard-bg flex items-center justify-center">
+          <div className="w-2/5 idcard-bg flex items-center justify-center relative">
             <div className="w-64 h-96 perspective-1000">
               <IDCard3D />
             </div>
+
+            {/* Bottom-right pulsing, clickable label */}
+            <button
+              type="button"
+              onClick={pokeCard}
+              title="Poke My ID Card"
+              className="absolute bottom-2 right-2 text-green-400 font-mono text-sm opacity-80 animate-pulse
+                         hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-green-400 rounded px-1"
+              aria-label="Poke My ID Card"
+            >
+              [Poke My ID Card]
+            </button>
           </div>
 
           {/* Right: Terminal bigger */}
-          <div className="w-3/5 bg-gray-900 text-green-400">
+          <div className="w-3/5 bg-gray-900 text-green-400 flex flex-col">
             <Terminal />
           </div>
         </main>

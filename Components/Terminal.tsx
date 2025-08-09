@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import "xterm/css/xterm.css";
 import { Terminal as XTerm } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
 import SnakeGame from "./SnakeGame";
 
 const COLOR_GREEN = "\x1b[32m";
@@ -109,18 +110,40 @@ export default function Terminal() {
   const bufferRef = useRef<string>("");
   const [showGame, setShowGame] = useState(false);
 
-  // Init xterm when terminal is visible
   useEffect(() => {
-    if (showGame) return; // don't init while game is shown
+    if (showGame) return;
     if (!terminalRef.current) return;
+
     const xterm = new XTerm({
       cursorBlink: true,
       scrollback: 1000,
-      cols: 90
+      cols: 90,
     });
+    const fitAddon = new FitAddon();
+    xterm.loadAddon(fitAddon);
+
+    // Open into our container first, THEN style & fit
     xterm.open(terminalRef.current);
+
+    // Give internal padding to the container (not the .xterm element)
+    terminalRef.current.style.padding = "12px";
+    terminalRef.current.style.boxSizing = "border-box";
+
+    // Make sure xterm occupies all available space
+    terminalRef.current.style.height = "100%";
+    terminalRef.current.style.width = "100%";
+
+    // Initial fit (next frame to ensure layout is ready)
+    requestAnimationFrame(() => fitAddon.fit());
+
+    // Keep it fitted when the panel resizes
+    const ro = new ResizeObserver(() => fitAddon.fit());
+    ro.observe(terminalRef.current);
+
     setTerm(xterm);
+
     return () => {
+      ro.disconnect();
       xterm.dispose();
       setTerm(undefined);
     };
@@ -129,31 +152,28 @@ export default function Terminal() {
   // Welcome text
   useEffect(() => {
     if (!term) return;
-
     const writeAnimated = async (text: string, delay = 0) => {
       for (const ch of text) {
         term.write(ch);
         await new Promise((r) => setTimeout(r, delay));
       }
     };
-
     (async () => {
-      term!.clear();
-      term!.write(HEADER);
+      term.clear();
+      term.write(HEADER);
       await writeAnimated(`${COLOR_WHITE}Welcome to my interactive portfolio terminal!\r\n`);
       await writeAnimated(`${COLOR_WHITE}Type 'help' to see available commands.\r\n\r\n`);
-      term!.write(PROMPT);
+      term.write(PROMPT);
     })();
   }, [term]);
 
   // Handle input
   useEffect(() => {
     if (!term) return;
-
     const onData = (data: string) => {
       for (let ch of data) {
         switch (ch) {
-          case "\r": { // Enter
+          case "\r": {
             term.write("\r\n");
             const cmd = bufferRef.current.trim();
             bufferRef.current = "";
@@ -162,11 +182,9 @@ export default function Terminal() {
                 term.clear();
                 term.write(HEADER);
               } else if (cmd === "game") {
-                // Swap to game view
                 term.write(`${COLOR_WHITE}Launching Snake... Press Esc to exit.\r\n\r\n`);
-                // brief delay so user sees the message
                 setTimeout(() => setShowGame(true), 50);
-                return; // don't print prompt now; game takes over
+                return;
               } else {
                 const resp =
                   COMMANDS[cmd] ??
@@ -180,7 +198,7 @@ export default function Terminal() {
             })();
             break;
           }
-          case "\u007F": // Backspace
+          case "\u007F":
             if (bufferRef.current.length) {
               bufferRef.current = bufferRef.current.slice(0, -1);
               term.write("\b \b");
@@ -192,28 +210,26 @@ export default function Terminal() {
         }
       }
     };
-
     const disp = term.onData(onData);
     return () => disp.dispose();
   }, [term]);
 
-  // Render either the terminal or the game
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       {!showGame ? (
-        <div ref={terminalRef} className="h-full p-4 font-mono text-sm" />
+        // flex-1 + min-h-0 ensures it can stretch to fill parent height in flex layouts
+        <div ref={terminalRef} className="flex-1 min-h-0 font-mono text-sm overflow-hidden" />
       ) : (
         <SnakeGame
           onExit={() => setShowGame(false)}
-          // Theme: match terminal colors
           colors={{
-            bg: "#0b0f14",        // deep gray/blue terminal bg
-            grid: "#0f141a",      // subtle grid
-            snake: "#20c20e",     // green
-            snakeHead: "#2ce01b", // brighter green
-            food: "#3ea6ff",      // blue accent
-            text: "#c9d1d9",      // light gray text
-            accent: "#3ea6ff",    // buttons
+            bg: "#0b0f14",
+            grid: "#0f141a",
+            snake: "#20c20e",
+            snakeHead: "#2ce01b",
+            food: "#3ea6ff",
+            text: "#c9d1d9",
+            accent: "#3ea6ff",
           }}
         />
       )}
