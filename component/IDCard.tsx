@@ -1,6 +1,7 @@
 // components/IDCard.tsx
 
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import type { SpringOptions } from "framer-motion";
 import Image from 'next/image';
 import { useEffect } from 'react';
 
@@ -19,7 +20,9 @@ export default function IDCard() {
     x.set(e.clientX - rect.left - rect.width / 2);
     y.set(e.clientY - rect.top);
   };
-  const spring = { type: 'spring', stiffness: 200, damping: 12 };
+
+  const spring: SpringOptions = { stiffness: 200, damping: 12 };
+
   const handlePointerUp = () => {
     animate(x, 0, spring);
     animate(y, 0, spring);
